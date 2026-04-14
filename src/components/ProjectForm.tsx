@@ -90,30 +90,64 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
       const publicationDate = formData.lancement.publication.date;
       const duration = formData.lancement.dureePublication;
 
-      if (!publicationDate || duration === undefined || duration === 0) {
+      if (!publicationDate || duration === undefined || duration === null || duration === 0 || isNaN(duration)) {
         return 0;
       }
 
-      const pubDate = new Date(publicationDate);
-      const expirationDate = new Date(pubDate);
-      expirationDate.setDate(expirationDate.getDate() + duration);
+      try {
+        const pubDate = new Date(publicationDate);
+        if (isNaN(pubDate.getTime())) {
+          return 0;
+        }
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      expirationDate.setHours(0, 0, 0, 0);
+        const expirationDate = new Date(pubDate);
+        expirationDate.setDate(expirationDate.getDate() + duration);
 
-      const diffTime = expirationDate.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        expirationDate.setHours(0, 0, 0, 0);
 
-      return diffDays;
+        const diffTime = expirationDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return diffDays;
+      } catch {
+        return 0;
+      }
+    };
+
+    const calculateCopeoDate = () => {
+      const publicationDate = formData.lancement.publication.date;
+      const duration = formData.lancement.dureePublication;
+
+      if (!publicationDate || duration === undefined || duration === null || duration === 0 || isNaN(duration)) {
+        return '';
+      }
+
+      try {
+        const pubDate = new Date(publicationDate);
+        if (isNaN(pubDate.getTime())) {
+          return '';
+        }
+
+        const copeoDate = new Date(pubDate);
+        copeoDate.setDate(copeoDate.getDate() + duration + 15);
+
+        return copeoDate.toISOString().split('T')[0];
+      } catch {
+        return '';
+      }
     };
 
     const newDelai = calculateDelaiRestant();
+    const newCopeoDate = calculateCopeoDate();
+
     setFormData((prev) => ({
       ...prev,
       lancement: {
         ...prev.lancement,
         delaiRestantExpiration: newDelai,
+        dateCopeo: newCopeoDate,
       },
     }));
   }, [formData.lancement.publication.date, formData.lancement.dureePublication]);
@@ -395,7 +429,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                     id="dateCopeo"
                     type="date"
                     value={formData.lancement.dateCopeo}
-                    onChange={(e) => updateField('lancement.dateCopeo', e.target.value)}
+                    disabled
                   />
                 </div>
               </div>
