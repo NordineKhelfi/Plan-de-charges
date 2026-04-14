@@ -5,9 +5,9 @@
   - [x] En procédure
 
 # Misc
-- [ ] Remove 'Cocontractant' from 'General' tab (already present in 'Contract', without parenthesis)
-- [ ] Amount readable
-- [ ] Currency: DA/TTC
+- [x] Remove 'Cocontractant' from 'General' tab (already present in 'Contract', without parenthesis)
+- [x] Amount readable
+- [x] Currency: DA/TTC
 - [ ] In new project, general tab: Référence demande **prévision**
 - [ ] In **Liste des projects** make **programme** and **opération** column content entirely visible
 - [ ] Add filter for the two new dropdowns (see below)
@@ -45,7 +45,7 @@
   - If in the past and 'Avancement nouveau' < 1.0 => 'HORS-DELAI' in red 
 
 # Payment
-- [ ] Taux de restitution des avances : (Restitution avance forfaitaire (DA) + Restitution avance approvisionnement (DA)) / (Avance forfaitaire + Avance approvisionement)
+- [ ] Taux de restitution des avances : (Restitution avance forfaitaire (DA/TTC) + Restitution avance approvisionnement (DA/TTC)) / (Avance forfaitaire + Avance approvisionement)
 
 # Bugs
 - [ ] Status dropdown not set when modifyig a project.

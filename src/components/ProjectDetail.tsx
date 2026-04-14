@@ -297,7 +297,7 @@ export function ProjectDetail({ projet, onBack, onEdit }: ProjectDetailProps) {
                 <div className="space-y-4">
                   <h4 className="font-semibold text-sm text-muted-foreground uppercase">Montant</h4>
                   <div className="bg-blue-50 p-6 rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground mb-2">Montant Engagé (DA TTC)</p>
+                    <p className="text-sm text-muted-foreground mb-2">Montant Engagé (DA/TTC)</p>
                     <p className="text-3xl font-bold text-blue-700">{formatCurrency(projet.contrat.montantEngage)}</p>
                   </div>
                 </div>

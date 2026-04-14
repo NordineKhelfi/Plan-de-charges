@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { Projet } from '@/types';
 import { STATUS_CONFIG } from '@/constants/statuses';
+import { formatCurrencyInput } from '@/lib/utils';
 
 interface ProjectFormProps {
   projet?: Projet;
@@ -167,15 +168,6 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                     value={formData.exercice}
                     onChange={(e) => updateField('exercice', parseInt(e.target.value))}
                     required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cocontractant">Cocontractant</Label>
-                  <Input
-                    id="cocontractant"
-                    value={formData.cocontractant || ''}
-                    onChange={(e) => updateField('cocontractant', e.target.value)}
-                    placeholder="Nom du cocontractant"
                   />
                 </div>
               </div>
@@ -416,16 +408,24 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="montantEngage">Montant Engagé (DA TTC)</Label>
-                <Input
-                  id="montantEngage"
-                  type="number"
-                  value={formData.contrat.montantEngage}
-                  onChange={(e) => updateField('contrat.montantEngage', parseFloat(e.target.value))}
-                />
+                <Label htmlFor="montantEngage">Montant Engagé (DA/TTC)</Label>
+                <div className="relative">
+                  <Input
+                    id="montantEngage"
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Ex: 45000000"
+                    value={formData.contrat.montantEngage}
+                    onChange={(e) => updateField('contrat.montantEngage', parseFloat(e.target.value))}
+                    className="font-mono"
+                  />
+                  {formData.contrat.montantEngage > 0 && (
+                    <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.contrat.montantEngage)} DA</div>
+                  )}
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contratCocontractant">Cocontractant (Contrat)</Label>
+                <Label htmlFor="contratCocontractant">Cocontractant</Label>
                 <Input
                   id="contratCocontractant"
                   value={formData.contrat.cocontractant || ''}
@@ -554,62 +554,110 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cumulPaiement">Cumul paiement (DA)</Label>
-                  <Input
-                    id="cumulPaiement"
-                    type="number"
-                    value={formData.paiement.cumulPaiement}
-                    onChange={(e) => updateField('paiement.cumulPaiement', parseFloat(e.target.value))}
-                  />
+                  <Label htmlFor="cumulPaiement">Cumul paiement (DA/TTC)</Label>
+                  <div className="relative">
+                    <Input
+                      id="cumulPaiement"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Ex: 25000000"
+                      value={formData.paiement.cumulPaiement}
+                      onChange={(e) => updateField('paiement.cumulPaiement', parseFloat(e.target.value))}
+                      className="font-mono"
+                    />
+                    {formData.paiement.cumulPaiement > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.cumulPaiement)} DA</div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="paiementInstance">Paiement en instance (DA)</Label>
-                <Input
-                  id="paiementInstance"
-                  type="number"
-                  value={formData.paiement.paiementEnInstance}
-                  onChange={(e) => updateField('paiement.paiementEnInstance', parseFloat(e.target.value))}
-                />
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="avanceForfaitaire">Avance forfaitaire (DA)</Label>
+                <Label htmlFor="paiementInstance">Paiement en instance (DA/TTC)</Label>
+                <div className="relative">
                   <Input
-                    id="avanceForfaitaire"
+                    id="paiementInstance"
                     type="number"
-                    value={formData.paiement.montantAvanceForfaitaire}
-                    onChange={(e) => updateField('paiement.montantAvanceForfaitaire', parseFloat(e.target.value))}
+                    inputMode="numeric"
+                    placeholder="Ex: 5000000"
+                    value={formData.paiement.paiementEnInstance}
+                    onChange={(e) => updateField('paiement.paiementEnInstance', parseFloat(e.target.value))}
+                    className="font-mono"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="restitutionForfaitaire">Restitution avance forfaitaire (DA)</Label>
-                  <Input
-                    id="restitutionForfaitaire"
-                    type="number"
-                    value={formData.paiement.restitutionAvanceForfaitaire}
-                    onChange={(e) => updateField('paiement.restitutionAvanceForfaitaire', parseFloat(e.target.value))}
-                  />
+                  {formData.paiement.paiementEnInstance > 0 && (
+                    <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.paiementEnInstance)} DA</div>
+                  )}
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="avanceAppro">Avance approvisionnement (DA)</Label>
-                  <Input
-                    id="avanceAppro"
-                    type="number"
-                    value={formData.paiement.montantAvanceApprovisionnement}
-                    onChange={(e) => updateField('paiement.montantAvanceApprovisionnement', parseFloat(e.target.value))}
-                  />
+                  <Label htmlFor="avanceForfaitaire">Avance forfaitaire (DA/TTC)</Label>
+                  <div className="relative">
+                    <Input
+                      id="avanceForfaitaire"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Ex: 3750000"
+                      value={formData.paiement.montantAvanceForfaitaire}
+                      onChange={(e) => updateField('paiement.montantAvanceForfaitaire', parseFloat(e.target.value))}
+                      className="font-mono"
+                    />
+                    {formData.paiement.montantAvanceForfaitaire > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.montantAvanceForfaitaire)} DA</div>
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="restitutionAppro">Restitution avance approvisionnement (DA)</Label>
-                  <Input
-                    id="restitutionAppro"
-                    type="number"
-                    value={formData.paiement.restitutionAvanceApprovisionnement}
-                    onChange={(e) => updateField('paiement.restitutionAvanceApprovisionnement', parseFloat(e.target.value))}
-                  />
+                  <Label htmlFor="restitutionForfaitaire">Restitution avance forfaitaire (DA/TTC)</Label>
+                  <div className="relative">
+                    <Input
+                      id="restitutionForfaitaire"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Ex: 3750000"
+                      value={formData.paiement.restitutionAvanceForfaitaire}
+                      onChange={(e) => updateField('paiement.restitutionAvanceForfaitaire', parseFloat(e.target.value))}
+                      className="font-mono"
+                    />
+                    {formData.paiement.restitutionAvanceForfaitaire > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.restitutionAvanceForfaitaire)} DA</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="avanceAppro">Avance approvisionnement (DA/TTC)</Label>
+                  <div className="relative">
+                    <Input
+                      id="avanceAppro"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Ex: 1000000"
+                      value={formData.paiement.montantAvanceApprovisionnement}
+                      onChange={(e) => updateField('paiement.montantAvanceApprovisionnement', parseFloat(e.target.value))}
+                      className="font-mono"
+                    />
+                    {formData.paiement.montantAvanceApprovisionnement > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.montantAvanceApprovisionnement)} DA</div>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="restitutionAppro">Restitution avance approvisionnement (DA/TTC)</Label>
+                  <div className="relative">
+                    <Input
+                      id="restitutionAppro"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Ex: 1000000"
+                      value={formData.paiement.restitutionAvanceApprovisionnement}
+                      onChange={(e) => updateField('paiement.restitutionAvanceApprovisionnement', parseFloat(e.target.value))}
+                      className="font-mono"
+                    />
+                    {formData.paiement.restitutionAvanceApprovisionnement > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">{formatCurrencyInput(formData.paiement.restitutionAvanceApprovisionnement)} DA</div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">

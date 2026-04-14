@@ -30,3 +30,10 @@ export function formatDate(dateString: string): string {
 export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
+
+export function formatCurrencyInput(value: number | string): string {
+  if (!value) return '';
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue)) return '';
+  return new Intl.NumberFormat('fr-FR').format(numValue);
+}
