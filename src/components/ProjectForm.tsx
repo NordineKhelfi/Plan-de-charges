@@ -85,6 +85,39 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
     }
   }, [projet]);
 
+  useEffect(() => {
+    const calculateDelaiRestant = () => {
+      const publicationDate = formData.lancement.publication.date;
+      const duration = formData.lancement.dureePublication;
+
+      if (!publicationDate || duration === undefined || duration === 0) {
+        return 0;
+      }
+
+      const pubDate = new Date(publicationDate);
+      const expirationDate = new Date(pubDate);
+      expirationDate.setDate(expirationDate.getDate() + duration);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      expirationDate.setHours(0, 0, 0, 0);
+
+      const diffTime = expirationDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      return diffDays;
+    };
+
+    const newDelai = calculateDelaiRestant();
+    setFormData((prev) => ({
+      ...prev,
+      lancement: {
+        ...prev.lancement,
+        delaiRestantExpiration: newDelai,
+      },
+    }));
+  }, [formData.lancement.publication.date, formData.lancement.dureePublication]);D"
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(projet ? { ...formData, id: projet.id, dateCreation: projet.dateCreation, dateModification: new Date().toISOString() } : formData);
@@ -353,7 +386,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                     id="delaiRestant"
                     type="number"
                     value={formData.lancement.delaiRestantExpiration}
-                    onChange={(e) => updateField('lancement.delaiRestantExpiration', parseInt(e.target.value))}
+                    disabled
                   />
                 </div>
                 <div className="space-y-2">
