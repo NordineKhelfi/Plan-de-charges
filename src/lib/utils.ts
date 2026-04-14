@@ -30,27 +30,3 @@ export function formatDate(dateString: string): string {
 export function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
-
-export function getStatusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    'planifie': 'Planifié',
-    'en_cours': 'En cours',
-    'en_pause': 'À l\'arrêt',
-    'en_retard': 'En retard',
-    'termine': 'Achevé',
-    'annule': 'Annulé',
-  };
-  return labels[status] || status;
-}
-
-export function getStatusColor(status: string): string {
-  const colors: Record<string, string> = {
-    'planifie': 'bg-gray-100 text-gray-800',
-    'en_cours': 'bg-blue-100 text-blue-800',
-    'en_pause': 'bg-orange-100 text-orange-800',
-    'en_retard': 'bg-red-100 text-red-800',
-    'termine': 'bg-green-100 text-green-800',
-    'annule': 'bg-slate-100 text-slate-800',
-  };
-  return colors[status] || 'bg-gray-100 text-gray-800';
-}

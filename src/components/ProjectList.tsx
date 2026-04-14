@@ -47,7 +47,8 @@ import {
   Download
 } from 'lucide-react';
 import type { Projet, FiltresProjet } from '@/types';
-import { formatCurrency, formatDate, formatPercent, getStatusLabel, getStatusColor } from '@/lib/utils';
+import { formatCurrency, formatDate, formatPercent } from '@/lib/utils';
+import { STATUS_CONFIG, getStatusLabel, getStatusColor } from '@/constants/statuses';
 import { getExercices, getCocontractants, getOperations } from '@/data/projets';
 import { exportProjectsToJSON, importProjectsFromJSON } from '@/lib/storage';
 import * as XLSX from 'xlsx';
@@ -369,12 +370,9 @@ export function ProjectList({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="planifie">Planifié</SelectItem>
-              <SelectItem value="en_cours">En cours</SelectItem>
-              <SelectItem value="en_pause">À l&apos;arrêt</SelectItem>
-              <SelectItem value="en_retard">En retard</SelectItem>
-              <SelectItem value="termine">Achevé</SelectItem>
-              <SelectItem value="annule">Annulé</SelectItem>
+              {STATUS_CONFIG.map((status) => (
+                <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

@@ -16,7 +16,8 @@ import {
   Wallet
 } from 'lucide-react';
 import type { Projet } from '@/types';
-import { formatCurrency, formatDate, formatPercent, getStatusLabel, getStatusColor } from '@/lib/utils';
+import { formatCurrency, formatDate, formatPercent } from '@/lib/utils';
+import { getStatusLabel, getStatusColor } from '@/constants/statuses';
 
 interface ProjectDetailProps {
   projet: Projet;

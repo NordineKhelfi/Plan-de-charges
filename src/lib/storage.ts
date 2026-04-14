@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Projet } from '../types/index';
+import { STATUS_CONFIG } from '../constants/statuses';
 
 // Storage configuration
 const STORAGE_KEY = 'app_projects_data';
@@ -88,7 +89,7 @@ const ProjetSchema = z.object({
   
   contraintes: z.array(ContrainteSchema),
   observations: z.string(),
-  statut: z.enum(['planifie', 'en_cours', 'en_pause', 'en_retard', 'termine', 'annule']),
+  statut: z.enum(STATUS_CONFIG.map(s => s.value)),
   
   dateCreation: z.string(),
   dateModification: z.string(),

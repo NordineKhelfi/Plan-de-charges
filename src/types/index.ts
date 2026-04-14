@@ -1,5 +1,7 @@
 // Types pour la gestion des projets d'infrastructure
 
+import type { StatutProjet } from '@/constants/statuses';
+
 export interface ReferenceDoc {
   numero: string;
   date: string;
@@ -70,14 +72,8 @@ export interface Contrainte {
   mesuresPrises: string;
 }
 
-// Statuts étendus pour le suivi détaillé
-export type StatutProjet = 
-  | 'planifie'           // Planifié
-  | 'en_cours'           // En cours
-  | 'en_pause'           // En pause / À l'arrêt
-  | 'en_retard'          // En retard
-  | 'termine'            // Achevé
-  | 'annule';            // Annulé
+// Statuts étendus pour le suivi détaillé - imported from constants
+export type { StatutProjet } from '@/constants/statuses';
 
 export interface Projet {
   id: string;

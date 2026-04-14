@@ -40,7 +40,9 @@ const COLORS = {
   planifie: '#6b7280',
   en_pause: '#f97316',
   en_retard: '#ef4444',
-  annule: '#64748b',
+  en_cours_resilition: '#64748b',
+  resilie: '#475569',
+  en_procedure: '#b45309',
 };
 
 export function Dashboard({ projets, onViewAlerts, onFilterByStatut, onFilterByExercice }: DashboardProps) {
@@ -52,7 +54,7 @@ export function Dashboard({ projets, onViewAlerts, onFilterByStatut, onFilterByE
     const data = [
       { name: 'Achevés', value: projets.filter(p => p.statut === 'termine').length, key: 'termine' },
       { name: 'En cours', value: projets.filter(p => p.statut === 'en_cours').length, key: 'en_cours' },
-      { name: 'Planifiés', value: projets.filter(p => p.statut === 'planifie').length, key: 'planifie' },
+      { name: 'Non-lancés', value: projets.filter(p => p.statut === 'planifie').length, key: 'planifie' },
       { name: 'À l\'arrêt', value: projets.filter(p => p.statut === 'en_pause').length, key: 'en_pause' },
       { name: 'En retard', value: projets.filter(p => p.statut === 'en_retard').length, key: 'en_retard' },
     ];

@@ -36,7 +36,8 @@ import {
   Search
 } from 'lucide-react';
 import type { Projet, FiltresEtatSortie, StatutProjet } from '@/types';
-import { formatCurrency, formatPercent, getStatusLabel, getStatusColor } from '@/lib/utils';
+import { formatCurrency, formatPercent } from '@/lib/utils';
+import { STATUS_FILTER_OPTIONS, getStatusLabel, getStatusColor } from '@/constants/statuses';
 import { getExercices, getCocontractants, getOperations, updateProjetStatut } from '@/data/projets';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -47,16 +48,6 @@ interface EtatSortieProps {
   onEditProject: (projet: Projet) => void;
   onRefresh: () => void;
 }
-
-const statutsFiltres: { value: StatutProjet | 'tous'; label: string }[] = [
-  { value: 'tous', label: 'Tous les statuts' },
-  { value: 'planifie', label: 'Planifié' },
-  { value: 'en_cours', label: 'En cours' },
-  { value: 'en_pause', label: 'À l\'arrêt' },
-  { value: 'en_retard', label: 'En retard' },
-  { value: 'termine', label: 'Achevé' },
-  { value: 'annule', label: 'Annulé' },
-];
 
 export function EtatSortie({ projets, onViewProject, onEditProject, onRefresh }: EtatSortieProps) {
   const [filtres, setFiltres] = useState<FiltresEtatSortie>({
@@ -196,7 +187,7 @@ export function EtatSortie({ projets, onViewProject, onEditProject, onRefresh }:
                 <SelectValue placeholder="Statut" />
               </SelectTrigger>
               <SelectContent>
-                {statutsFiltres.map((s) => (
+                {STATUS_FILTER_OPTIONS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>
@@ -338,7 +329,7 @@ export function EtatSortie({ projets, onViewProject, onEditProject, onRefresh }:
                                   <DialogTitle>Modifier le statut</DialogTitle>
                                 </DialogHeader>
                                 <div className="grid gap-2 py-4">
-                                  {statutsFiltres.filter(s => s.value !== 'tous').map((s) => (
+                                  {STATUS_FILTER_OPTIONS.filter(s => s.value !== 'tous').map((s) => (
                                     <Button
                                       key={s.value}
                                       variant={projet.statut === s.value ? 'default' : 'outline'}

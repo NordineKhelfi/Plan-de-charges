@@ -14,6 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { Projet } from '@/types';
+import { STATUS_CONFIG } from '@/constants/statuses';
 
 interface ProjectFormProps {
   projet?: Projet;
@@ -185,15 +186,12 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                   onValueChange={(value) => updateField('statut', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Sélectionner un statut" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="planifie">Planifié</SelectItem>
-                    <SelectItem value="en_cours">En cours</SelectItem>
-                    <SelectItem value="en_pause">À l&apos;arrêt</SelectItem>
-                    <SelectItem value="en_retard">En retard</SelectItem>
-                    <SelectItem value="termine">Achevé</SelectItem>
-                    <SelectItem value="annule">Annulé</SelectItem>
+                    {STATUS_CONFIG.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
