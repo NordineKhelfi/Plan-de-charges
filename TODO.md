@@ -13,15 +13,14 @@
 - [ ] Add filter for the two new dropdowns (see below)
 
 # Lancement
-- [ ] Délai restant: (Date publication + durée publication) relatively to today (in days)
-- [ ] Date COPEO: Date publication + durée publication + 15 
+- [x] Délai restant: (Date publication + durée publication) relatively to today (in days)
+- [x] Date COPEO: Date publication + durée publication + 15 
 - [ ] Add **Type de lancement**: 
   - Devis
   - Prestation de service
   - Marché
 
 # Contrat
-- [ ] Remove 'Cocontractant' from 'General' tab (already present in 'Contract', without parenthesis)
 - [ ] Add **Catégorie entreprise**: 
   - Publique
   - Epic-militaire
