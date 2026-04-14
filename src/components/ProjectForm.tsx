@@ -189,7 +189,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Référence Demande</Label>
+                  <Label>Référence Demande Prévision</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="N°"

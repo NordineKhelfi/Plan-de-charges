@@ -8,8 +8,8 @@
 - [x] Remove 'Cocontractant' from 'General' tab (already present in 'Contract', without parenthesis)
 - [x] Amount readable
 - [x] Currency: DA/TTC
-- [ ] In new project, general tab: Référence demande **prévision**
-- [ ] In **Liste des projects** make **programme** and **opération** column content entirely visible
+- [x] In new project, general tab: Référence demande **prévision**
+- [x] In **Liste des projects** make **programme** and **opération** column content entirely visible
 - [ ] Add filter for the two new dropdowns (see below)
 
 # Lancement

@@ -410,15 +410,15 @@ export function ProjectList({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Exercice</TableHead>
-                <TableHead>Programme</TableHead>
-                <TableHead>Opération</TableHead>
-                <TableHead>Cocontractant</TableHead>
-                <TableHead className="text-right">Montant Engagé</TableHead>
-                <TableHead className="text-right">Avancement</TableHead>
-                <TableHead className="text-right">Payé</TableHead>
-                <TableHead className="text-center">Statut</TableHead>
-                <TableHead className="text-center">Actions</TableHead>
+                <TableHead className="w-16">Exercice</TableHead>
+                <TableHead className="w-40">Programme</TableHead>
+                <TableHead className="w-40">Opération</TableHead>
+                <TableHead className="w-48">Cocontractant</TableHead>
+                <TableHead className="text-right w-32">Montant Engagé</TableHead>
+                <TableHead className="text-right w-24">Avancement</TableHead>
+                <TableHead className="text-right w-24">Payé</TableHead>
+                <TableHead className="text-center w-20">Statut</TableHead>
+                <TableHead className="text-center w-24">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -430,21 +430,21 @@ export function ProjectList({
                 </TableRow>
               ) : (
                 projetsPagines.map((projet) => (
-                  <TableRow key={projet.id} className="cursor-pointer hover:bg-muted/50">
-                    <TableCell>{projet.exercice}</TableCell>
-                    <TableCell className="font-medium max-w-[200px] truncate" title={projet.programme}>
+                  <TableRow key={projet.id} className="cursor-pointer hover:bg-muted/50 align-top">
+                    <TableCell className="whitespace-normal">{projet.exercice}</TableCell>
+                    <TableCell className="font-medium whitespace-normal break-words">
                       {projet.programme}
                     </TableCell>
-                    <TableCell className="max-w-[150px] truncate text-muted-foreground">
+                    <TableCell className="whitespace-normal break-words text-muted-foreground">
                       {projet.operation || '-'}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="whitespace-normal break-words text-muted-foreground">
                       {projet.cocontractant || '-'}
                     </TableCell>
-                    <TableCell className="text-right">{formatCurrency(projet.contrat.montantEngage)}</TableCell>
-                    <TableCell className="text-right">{formatPercent(projet.travaux.avancementNouveau)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(projet.paiement.cumulPaiement)}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-right whitespace-nowrap">{formatCurrency(projet.contrat.montantEngage)}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">{formatPercent(projet.travaux.avancementNouveau)}</TableCell>
+                    <TableCell className="text-right whitespace-nowrap">{formatCurrency(projet.paiement.cumulPaiement)}</TableCell>
+                    <TableCell className="text-center whitespace-nowrap">
                       <Badge className={getStatusColor(projet.statut)}>
                         {getStatusLabel(projet.statut)}
                       </Badge>
