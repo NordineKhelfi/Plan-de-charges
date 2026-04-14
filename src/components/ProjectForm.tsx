@@ -116,7 +116,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
         delaiRestantExpiration: newDelai,
       },
     }));
-  }, [formData.lancement.publication.date, formData.lancement.dureePublication]);D"
+  }, [formData.lancement.publication.date, formData.lancement.dureePublication]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
