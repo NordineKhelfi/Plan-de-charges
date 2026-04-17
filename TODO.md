@@ -10,18 +10,18 @@
 - [x] Currency: DA/TTC
 - [x] In new project, general tab: Référence demande **prévision**
 - [x] In **Liste des projects** make **programme** and **opération** column content entirely visible
-- [ ] Add filter for the two new dropdowns (see below)
+- [x] Add filter for the two new dropdowns (see below)
 
 # Lancement
 - [x] Délai restant: (Date publication + durée publication) relatively to today (in days)
 - [x] Date COPEO: Date publication + durée publication + 15 
-- [ ] Add **Type de lancement**: 
+- [x] Add **Type de lancement**: 
   - Devis
   - Prestation de service
   - Marché
 
 # Contrat
-- [ ] Add **Catégorie entreprise**: 
+- [x] Add **Catégorie entreprise**: 
   - Publique
   - Epic-militaire
   - Militaire
