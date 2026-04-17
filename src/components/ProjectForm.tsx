@@ -14,7 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { Projet } from '@/types';
-import { STATUS_CONFIG } from '@/constants/statuses';
+import { STATUS_CONFIG, LANCEMENT_TYPE_OPTIONS, CATEGORIE_ENTREPRISE_OPTIONS } from '@/constants/statuses';
 import { formatCurrencyInput } from '@/lib/utils';
 
 interface ProjectFormProps {
@@ -44,11 +44,13 @@ const emptyProjet: Omit<Projet, 'id' | 'dateCreation' | 'dateModification'> = {
     dureePublication: 30,
     delaiRestantExpiration: 0,
     dateCopeo: '',
+    typeLancement: undefined,
   },
   contrat: {
     transmissionProjetContrat: { numero: '', date: '' },
     dossierEngagement: { numero: '', date: '' },
     montantEngage: 0,
+    categorieEntreprise: undefined,
   },
   travaux: {
     ods: { numero: '', date: '' },
@@ -81,6 +83,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
   useEffect(() => {
     if (projet) {
       const { id, dateCreation, dateModification, ...rest } = projet;
+      // debugger;
       setFormData(rest);
     }
   }, [projet]);
@@ -404,6 +407,24 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="typeLancement">Type de lancement</Label>
+                <Select
+                  value={formData.lancement.typeLancement || ''}
+                  onValueChange={(value) => updateField('lancement.typeLancement', value || undefined)}
+                >
+                  <SelectTrigger id="typeLancement">
+                    <SelectValue placeholder="Sélectionner un type de lancement" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANCEMENT_TYPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dureePublication">Durée publication (jours)</Label>
@@ -499,6 +520,24 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                   onChange={(e) => updateField('contrat.cocontractant', e.target.value)}
                   placeholder="Nom du cocontractant dans le contrat"
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="categorieEntreprise">Catégorie entreprise</Label>
+                <Select
+                  value={formData.contrat.categorieEntreprise || ''}
+                  onValueChange={(value) => updateField('contrat.categorieEntreprise', value || undefined)}
+                >
+                  <SelectTrigger id="categorieEntreprise">
+                    <SelectValue placeholder="Sélectionner une catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIE_ENTREPRISE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>

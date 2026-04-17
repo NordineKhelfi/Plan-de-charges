@@ -90,3 +90,30 @@ export const STATUS_FILTER_OPTIONS: Array<{
   { value: 'tous', label: 'Tous les statuts' },
   ...STATUS_CONFIG.map(s => ({ value: s.value, label: s.label })),
 ];
+
+/**
+ * Type de lancement options
+ */
+export const LANCEMENT_TYPE_OPTIONS: Array<{
+  value: string;
+  label: string;
+}> = [
+  { value: 'devis', label: 'Devis' },
+  { value: 'prestation_service', label: 'Prestation de service' },
+  { value: 'marche', label: 'Marché' },
+];
+
+/**
+ * Catégorie entreprise options
+ */
+export const CATEGORIE_ENTREPRISE_OPTIONS: Array<{
+  value: string;
+  label: string;
+}> = [
+  { value: 'publique', label: 'Publique' },
+  { value: 'epic_militaire', label: 'Epic-militaire' },
+  { value: 'militaire', label: 'Militaire' },
+  { value: 'privee', label: 'Privée' },
+  { value: 'etrangere', label: 'Étrangère' },
+  { value: 'groupement_etp', label: 'Groupement ETP' },
+];

@@ -2,6 +2,9 @@
 
 import type { StatutProjet } from '@/constants/statuses';
 
+export type TypeLancement = 'devis' | 'prestation_service' | 'marche';
+export type CategorieEntreprise = 'publique' | 'epic_militaire' | 'militaire' | 'privee' | 'etrangere' | 'groupement_etp';
+
 export interface ReferenceDoc {
   numero: string;
   date: string;
@@ -30,6 +33,7 @@ export interface LancementProcedure {
   dureePublication: number;
   delaiRestantExpiration: number;
   dateCopeo: string;
+  typeLancement?: TypeLancement;
 }
 
 export interface Contrat {
@@ -39,6 +43,7 @@ export interface Contrat {
   dossierEngagement: ReferenceDoc;
   montantEngage: number;
   cocontractant?: string;
+  categorieEntreprise?: CategorieEntreprise;
 }
 
 export interface ODS {
@@ -127,6 +132,8 @@ export interface FiltresProjet {
   dateFin?: string;
   cocontractant?: string;
   operation?: string;
+  typeLancement?: string;
+  categorieEntreprise?: string;
 }
 
 export interface FiltresEtatSortie {

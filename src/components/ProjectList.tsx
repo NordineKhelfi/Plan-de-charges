@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import type { Projet, FiltresProjet } from '@/types';
 import { formatCurrency, formatDate, formatPercent } from '@/lib/utils';
-import { STATUS_CONFIG, getStatusLabel, getStatusColor } from '@/constants/statuses';
+import { STATUS_CONFIG, getStatusLabel, getStatusColor, LANCEMENT_TYPE_OPTIONS, CATEGORIE_ENTREPRISE_OPTIONS } from '@/constants/statuses';
 import { getExercices, getCocontractants, getOperations } from '@/data/projets';
 import { exportProjectsToJSON, importProjectsFromJSON } from '@/lib/storage';
 import * as XLSX from 'xlsx';
@@ -89,6 +89,26 @@ export function ProjectList({
   const exercices = useMemo(() => getExercices(), []);
   const cocontractants = useMemo(() => getCocontractants(), []);
   const operations = useMemo(() => getOperations(), []);
+  
+  const typesLancement = useMemo(() => {
+    const types = new Set<string>();
+    projets.forEach(p => {
+      if (p.lancement?.typeLancement) {
+        types.add(p.lancement.typeLancement);
+      }
+    });
+    return Array.from(types).sort();
+  }, [projets]);
+
+  const categoriesEntreprise = useMemo(() => {
+    const categories = new Set<string>();
+    projets.forEach(p => {
+      if (p.contrat?.categorieEntreprise) {
+        categories.add(p.contrat.categorieEntreprise);
+      }
+    });
+    return Array.from(categories).sort();
+  }, [projets]);
 
   // Appliquer les filtres externes (depuis le Dashboard)
   useEffect(() => {
@@ -106,6 +126,8 @@ export function ProjectList({
       if (filtres.statut && projet.statut !== filtres.statut) return false;
       if (filtres.cocontractant && projet.cocontractant !== filtres.cocontractant) return false;
       if (filtres.operation && projet.operation !== filtres.operation) return false;
+      if (filtres.typeLancement && projet.lancement?.typeLancement !== filtres.typeLancement) return false;
+      if (filtres.categorieEntreprise && projet.contrat?.categorieEntreprise !== filtres.categorieEntreprise) return false;
       if (filtres.recherche) {
         const search = filtres.recherche.toLowerCase();
         const matchProgramme = projet.programme.toLowerCase().includes(search);
@@ -200,7 +222,7 @@ export function ProjectList({
   };
 
   const hasActiveFilters = filtreStatut || filtreExercice || filtres.cocontractant || 
-    filtres.operation || filtres.recherche;
+    filtres.operation || filtres.recherche || filtres.typeLancement || filtres.categorieEntreprise;
 
   return (
     <Card>
@@ -373,6 +395,52 @@ export function ProjectList({
               {STATUS_CONFIG.map((status) => (
                 <SelectItem key={status.value} value={status.value}>{status.label}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={filtres.typeLancement || 'all'}
+            onValueChange={(value) => {
+              setFiltres({ ...filtres, typeLancement: value === 'all' ? undefined : value });
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger>
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Type de lancement" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les types</SelectItem>
+              {typesLancement.map((type) => {
+                const option = LANCEMENT_TYPE_OPTIONS.find(o => o.value === type);
+                return (
+                  <SelectItem key={type} value={type}>
+                    {option?.label || type}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          <Select
+            value={filtres.categorieEntreprise || 'all'}
+            onValueChange={(value) => {
+              setFiltres({ ...filtres, categorieEntreprise: value === 'all' ? undefined : value });
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger>
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Catégorie entreprise" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {categoriesEntreprise.map((cat) => {
+                const option = CATEGORIE_ENTREPRISE_OPTIONS.find(o => o.value === cat);
+                return (
+                  <SelectItem key={cat} value={cat}>
+                    {option?.label || cat}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>

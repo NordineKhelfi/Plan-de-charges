@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Projet } from '../types/index';
-import { STATUS_CONFIG } from '../constants/statuses';
+import { CATEGORIE_ENTREPRISE_OPTIONS, LANCEMENT_TYPE_OPTIONS, STATUS_CONFIG } from '../constants/statuses';
 
 // Storage configuration
 const STORAGE_KEY = 'app_projects_data';
@@ -55,6 +55,7 @@ const ProjetSchema = z.object({
     dureePublication: z.number(),
     delaiRestantExpiration: z.number(),
     dateCopeo: z.string(),
+    typeLancement: z.enum(LANCEMENT_TYPE_OPTIONS.map(o => o.value)).optional(),
   }),
   
   contrat: z.object({
@@ -64,6 +65,7 @@ const ProjetSchema = z.object({
     dossierEngagement: ReferenceDocSchema,
     montantEngage: z.number(),
     cocontractant: z.string().optional(),
+    categorieEntreprise: z.enum(CATEGORIE_ENTREPRISE_OPTIONS.map(o => o.value)).optional(),
   }),
   
   travaux: z.object({
