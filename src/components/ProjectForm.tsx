@@ -155,6 +155,36 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
     }));
   }, [formData.lancement.publication.date, formData.lancement.dureePublication]);
 
+  useEffect(() => {
+    const calculateTauxRestitution = () => {
+      const { restitutionAvanceApprovisionnement, restitutionAvanceForfaitaire, montantAvanceApprovisionnement, montantAvanceForfaitaire } = formData.paiement;
+      
+      const numerateur = restitutionAvanceApprovisionnement + restitutionAvanceForfaitaire;
+      const denominateur = montantAvanceApprovisionnement + montantAvanceForfaitaire;
+
+      if (denominateur === 0 || denominateur === undefined || isNaN(denominateur)) {
+        return 0;
+      }
+
+      return numerateur / denominateur;
+    };
+
+    const newTaux = calculateTauxRestitution();
+
+    setFormData((prev) => ({
+      ...prev,
+      paiement: {
+        ...prev.paiement,
+        tauxRestitutionAvances: newTaux,
+      },
+    }));
+  }, [
+    formData.paiement.restitutionAvanceApprovisionnement,
+    formData.paiement.restitutionAvanceForfaitaire,
+    formData.paiement.montantAvanceApprovisionnement,
+    formData.paiement.montantAvanceForfaitaire,
+  ]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(projet ? { ...formData, id: projet.id, dateCreation: projet.dateCreation, dateModification: new Date().toISOString() } : formData);
@@ -775,7 +805,7 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                   min="0"
                   max="1"
                   value={formData.paiement.tauxRestitutionAvances}
-                  onChange={(e) => updateField('paiement.tauxRestitutionAvances', parseFloat(e.target.value))}
+                  disabled
                 />
               </div>
             </CardContent>

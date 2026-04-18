@@ -44,7 +44,7 @@
   - If in the past and 'Avancement nouveau' < 1.0 => 'HORS-DELAI' in red 
 
 # Payment
-- [ ] Taux de restitution des avances : (Restitution avance forfaitaire (DA/TTC) + Restitution avance approvisionnement (DA/TTC)) / (Avance forfaitaire + Avance approvisionement)
+- [x] Taux de restitution des avances : (Restitution avance forfaitaire (DA/TTC) + Restitution avance approvisionnement (DA/TTC)) / (Avance forfaitaire + Avance approvisionement)
 
 # Bugs
 - [ ] Status dropdown not set when modifyig a project.
