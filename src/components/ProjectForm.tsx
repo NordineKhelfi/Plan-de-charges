@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save } from 'lucide-react';
-import type { Projet } from '@/types';
+import type { Projet, ArretReprise } from '@/types';
 import { STATUS_CONFIG, LANCEMENT_TYPE_OPTIONS, CATEGORIE_ENTREPRISE_OPTIONS } from '@/constants/statuses';
 import { formatCurrencyInput } from '@/lib/utils';
 
@@ -60,6 +60,7 @@ const emptyProjet: Omit<Projet, 'id' | 'dateCreation' | 'dateModification'> = {
     dateEffetCommencement: '',
     avancementAncien: 0,
     avancementNouveau: 0,
+    arretsReprises: [],
   },
   paiement: {
     pourcentageCumulPaiement: 0,
@@ -77,14 +78,31 @@ const emptyProjet: Omit<Projet, 'id' | 'dateCreation' | 'dateModification'> = {
 };
 
 export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
-  const [formData, setFormData] = useState<Omit<Projet, 'id' | 'dateCreation' | 'dateModification'>>(emptyProjet);
+  const [formData, setFormData] = useState<Omit<Projet, 'id' | 'dateCreation' | 'dateModification'>>(() => {
+    return {
+      ...emptyProjet,
+      travaux: {
+        ...emptyProjet.travaux,
+        arretsReprises: Array.isArray(emptyProjet.travaux.arretsReprises) ? emptyProjet.travaux.arretsReprises : [],
+      },
+    };
+  });
   const [activeTab, setActiveTab] = useState('general');
+  const [calculatedStoppages, setCalculatedStoppages] = useState<{ delaiArret: number[] }>({ delaiArret: [] });
 
   useEffect(() => {
     if (projet) {
       const { id, dateCreation, dateModification, ...rest } = projet;
-      // debugger;
-      setFormData(rest);
+      // Ensure arretsReprises is initialized as array (for backward compatibility with existing projects)
+      const arretsReprises = Array.isArray(rest.travaux.arretsReprises) ? rest.travaux.arretsReprises : [];
+      const formDataWithDefaults = {
+        ...rest,
+        travaux: {
+          ...rest.travaux,
+          arretsReprises,
+        },
+      };
+      setFormData(formDataWithDefaults);
     }
   }, [projet]);
 
@@ -184,24 +202,134 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
     formData.paiement.montantAvanceApprovisionnement,
     formData.paiement.montantAvanceForfaitaire,
   ]);
+  useEffect(() => {
+    const calculateStoppageDelays = () => {
+      const arretes = Array.isArray(formData.travaux.arretsReprises) ? formData.travaux.arretsReprises : [];
+      const delays = arretes.map((arret) => {
+        const { dateEffetArret, dateEffetReprise } = arret;
 
+        if (!dateEffetArret || !dateEffetReprise) {
+          return 0;
+        }
+
+        try {
+          const startDate = new Date(dateEffetArret);
+          const endDate = new Date(dateEffetReprise);
+
+          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            return 0;
+          }
+
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setHours(0, 0, 0, 0);
+
+          const diffTime = endDate.getTime() - startDate.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          return Math.max(0, diffDays);
+        } catch {
+          return 0;
+        }
+      });
+
+      setCalculatedStoppages({ delaiArret: delays });
+    };
+
+    calculateStoppageDelays();
+  }, [formData.travaux.arretsReprises, formData.travaux]);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(projet ? { ...formData, id: projet.id, dateCreation: projet.dateCreation, dateModification: new Date().toISOString() } : formData);
   };
 
   const updateField = (path: string, value: unknown) => {
-    const keys = path.split('.');
     setFormData((prev) => {
-      const newData = { ...prev };
-      let current: Record<string, unknown> = newData;
-      for (let i = 0; i < keys.length - 1; i++) {
-        current[keys[i]] = { ...(current[keys[i]] as Record<string, unknown>) };
-        current = current[keys[i]] as Record<string, unknown>;
-      }
-      current[keys[keys.length - 1]] = value;
-      return newData;
+      const keys = path.split('.');
+      
+      const updateNested = (obj: any, keyPath: string[]): any => {
+        if (keyPath.length === 0) return obj;
+        
+        const [head, ...tail] = keyPath;
+        const isArrayIndex = /^\d+$/.test(head);
+        
+        if (isArrayIndex) {
+          const index = parseInt(head, 10);
+          if (Array.isArray(obj)) {
+            const newArr = [...obj];
+            newArr[index] = updateNested(obj[index], tail);
+            return newArr;
+          }
+        }
+        
+        if (tail.length === 0) {
+          // Last key - set the value
+          return { ...obj, [head]: value };
+        }
+        
+        // Recurse deeper
+        return { ...obj, [head]: updateNested(obj[head], tail) };
+      };
+      
+      return updateNested(prev, keys);
     });
+  };
+
+  const getTotalStoppageDelay = (): number => {
+    return calculatedStoppages.delaiArret.reduce((sum, delay) => sum + delay, 0);
+  };
+
+  const getUpdatedRealizationDelay = (): number => {
+    return formData.travaux.delaisRealisation + getTotalStoppageDelay();
+  };
+
+  const getUpdatedContractCompletionDate = (): string => {
+    const startDate = formData.travaux.dateEffetCommencement;
+    if (!startDate) return '';
+
+    try {
+      const date = new Date(startDate);
+      if (isNaN(date.getTime())) return '';
+
+      const updatedDelay = getUpdatedRealizationDelay();
+      date.setDate(date.getDate() + updatedDelay);
+
+      return date.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+
+  const isHorsDelai = (): boolean => {
+    const completionDate = getUpdatedContractCompletionDate();
+    if (!completionDate) return false;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const completion = new Date(completionDate);
+    completion.setHours(0, 0, 0, 0);
+
+    const isPast = completion < today;
+    const isIncomplete = formData.travaux.avancementNouveau < 1;
+
+    return isPast && isIncomplete;
+  };
+
+  const addStoppage = () => {
+    const newArret: ArretReprise = {
+      referenceOdsArret: { numero: '', date: '' },
+      dateEffetArret: '',
+      motifsArret: '',
+      referenceOdsReprise: { numero: '', date: '' },
+      dateEffetReprise: '',
+    };
+    const currentArretes = Array.isArray(formData.travaux.arretsReprises) ? formData.travaux.arretsReprises : [];
+    updateField('travaux.arretsReprises', [...currentArretes, newArret]);
+  };
+
+  const removeStoppage = (index: number) => {
+    const currentArretes = Array.isArray(formData.travaux.arretsReprises) ? formData.travaux.arretsReprises : [];
+    const updated = currentArretes.filter((_, i) => i !== index);
+    updateField('travaux.arretsReprises', updated);
   };
 
   return (
@@ -663,6 +791,171 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
                     value={formData.travaux.avancementNouveau}
                     onChange={(e) => updateField('travaux.avancementNouveau', parseFloat(e.target.value))}
                   />
+                </div>
+              </div>
+
+              <div className="border-t pt-6 mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Arrêts et reprises de travaux</h3>
+                  <Button type="button" variant="outline" size="sm" onClick={addStoppage}>
+                    + Ajouter un arrêt
+                  </Button>
+                </div>
+
+                {!Array.isArray(formData.travaux.arretsReprises) || formData.travaux.arretsReprises.length === 0 ? (
+                  <p className="text-sm text-muted-foreground italic">Aucun arrêt de travaux enregistré</p>
+                ) : (
+                  <div className="space-y-6">
+                    {Array.isArray(formData.travaux.arretsReprises) && formData.travaux.arretsReprises.map((arret, index) => (
+                      <div key={index} className="border rounded-lg p-4 bg-slate-50">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-semibold text-sm">Arrêt et Reprise n°{index + 1}</h4>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeStoppage(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            ✕ Supprimer
+                          </Button>
+                        </div>
+
+                        {/* Arrêt section */}
+                        <div className="bg-white p-3 rounded mb-4">
+                          <p className="text-xs font-semibold text-slate-600 mb-3">ARRÊT DE TRAVAUX</p>
+                          <div className="grid md:grid-cols-2 gap-3 mb-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Référence ODS d'arrêt n°{index + 1}</Label>
+                              <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                  placeholder="N°"
+                                  size={32}
+                                  className="text-sm"
+                                  value={arret.referenceOdsArret.numero}
+                                  onChange={(e) =>
+                                    updateField(`travaux.arretsReprises.${index}.referenceOdsArret.numero`, e.target.value)
+                                  }
+                                />
+                                <Input
+                                  type="date"
+                                  size={32}
+                                  className="text-sm"
+                                  value={arret.referenceOdsArret.date}
+                                  onChange={(e) =>
+                                    updateField(`travaux.arretsReprises.${index}.referenceOdsArret.date`, e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Date d'effet</Label>
+                              <Input
+                                type="date"
+                                className="text-sm"
+                                value={arret.dateEffetArret}
+                                onChange={(e) =>
+                                  updateField(`travaux.arretsReprises.${index}.dateEffetArret`, e.target.value)
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Motifs d'arrêt</Label>
+                            <Input
+                              placeholder="Indiquer les raisons de l'arrêt des travaux"
+                              className="text-sm"
+                              value={arret.motifsArret}
+                              onChange={(e) =>
+                                updateField(`travaux.arretsReprises.${index}.motifsArret`, e.target.value)
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {/* Reprise section */}
+                        <div className="bg-white p-3 rounded mb-4">
+                          <p className="text-xs font-semibold text-slate-600 mb-3">REPRISE DE TRAVAUX</p>
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Référence ODS de reprise n°{index + 1}</Label>
+                              <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                  placeholder="N°"
+                                  size={32}
+                                  className="text-sm"
+                                  value={arret.referenceOdsReprise.numero}
+                                  onChange={(e) =>
+                                    updateField(`travaux.arretsReprises.${index}.referenceOdsReprise.numero`, e.target.value)
+                                  }
+                                />
+                                <Input
+                                  type="date"
+                                  size={32}
+                                  className="text-sm"
+                                  value={arret.referenceOdsReprise.date}
+                                  onChange={(e) =>
+                                    updateField(`travaux.arretsReprises.${index}.referenceOdsReprise.date`, e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Date d'effet</Label>
+                              <Input
+                                type="date"
+                                className="text-sm"
+                                value={arret.dateEffetReprise}
+                                onChange={(e) =>
+                                  updateField(`travaux.arretsReprises.${index}.dateEffetReprise`, e.target.value)
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Calculated delay */}
+                        <div className="bg-blue-50 p-3 rounded">
+                          <Label className="text-xs font-semibold">Délai d'arrêt (jours)</Label>
+                          <Input
+                            type="number"
+                            className="text-sm"
+                            value={calculatedStoppages.delaiArret[index] || 0}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Summary calculations */}
+              <div className="border-t pt-6 mt-6 space-y-4 bg-amber-50 p-4 rounded">
+                <h3 className="font-semibold text-sm">Récapitulatif des délais</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Délai total d'arrêt (jours)</Label>
+                    <Input type="number" value={getTotalStoppageDelay()} disabled className="text-sm" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Délai de réalisation actualisé (jours)</Label>
+                    <Input type="number" value={getUpdatedRealizationDelay()} disabled className="text-sm" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">Date fin contractuelle actualisée</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="date"
+                      value={getUpdatedContractCompletionDate()}
+                      disabled
+                      className="text-sm flex-1"
+                    />
+                    {isHorsDelai() && (
+                      <div className="text-red-600 font-bold text-lg whitespace-nowrap">HORS-DELAI</div>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>

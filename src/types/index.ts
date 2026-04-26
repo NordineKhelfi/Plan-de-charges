@@ -51,6 +51,14 @@ export interface ODS {
   date: string;
 }
 
+export interface ArretReprise {
+  referenceOdsArret: ReferenceDoc;
+  dateEffetArret: string;
+  motifsArret: string;
+  referenceOdsReprise: ReferenceDoc;
+  dateEffetReprise: string;
+}
+
 export interface Travaux {
   ods: ODS;
   notificationOds: string;
@@ -59,6 +67,7 @@ export interface Travaux {
   dateEffetCommencement: string;
   avancementAncien: number;
   avancementNouveau: number;
+  arretsReprises: ArretReprise[];
 }
 
 export interface Paiement {

@@ -23,6 +23,14 @@ const OdsSchema = z.object({
   date: z.string(),
 });
 
+const ArretRepriseSchema = z.object({
+  referenceOdsArret: ReferenceDocSchema,
+  dateEffetArret: z.string(),
+  motifsArret: z.string(),
+  referenceOdsReprise: ReferenceDocSchema,
+  dateEffetReprise: z.string(),
+});
+
 const ContrainteSchema = z.object({
   description: z.string(),
   mesuresPrises: z.string(),
@@ -76,6 +84,7 @@ const ProjetSchema = z.object({
     dateEffetCommencement: z.string(),
     avancementAncien: z.number(),
     avancementNouveau: z.number(),
+    arretsReprises: z.array(ArretRepriseSchema).optional(),
   }),
   
   paiement: z.object({

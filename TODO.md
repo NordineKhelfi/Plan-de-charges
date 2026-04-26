@@ -30,17 +30,17 @@
   - Groupement ETP
 
 # Travaux
-- [ ] Référence OSD d'arrêt n°1 (input number)
-- [ ] Date
-- [ ] Motifs
-- [ ] Date d'effet
-- [ ] Référence OSD de reprise (input number)
-- [ ] Date
-- [ ] Date d'effet
-- [ ] Référence OSD d'arrêt n°2 (input number) etc..
-- [ ] 'Délai d'arrêt' for each one
-- [ ] Délai de réalisation actualisé: Délai de réalisation + Délai d'arrêt
-- [ ] Date fin contractuelle actualisée: Date d'effet de commencement + Délai de réalisation actualisé
+- [x] Référence ODS d'arrêt n°1 (input number)
+- [x] Date
+- [x] Date d'effet
+- [x] Motifs
+- [x] Référence ODS de reprise (input number)
+- [x] Date
+- [x] Date d'effet
+- [x] Référence ODS d'arrêt n°2 (input number) etc..
+- [x] 'Délai d'arrêt' for each one
+- [x] Délai de réalisation actualisé: Délai de réalisation + Délai d'arrêt
+- [x] Date fin contractuelle actualisée: Date d'effet de commencement + Délai de réalisation actualisé
   - If in the past and 'Avancement nouveau' < 1.0 => 'HORS-DELAI' in red 
 
 # Payment
