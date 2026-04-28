@@ -79,6 +79,17 @@ const emptyProjet: Omit<Projet, 'id' | 'dateCreation' | 'dateModification'> = {
 
 export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
   const [formData, setFormData] = useState<Omit<Projet, 'id' | 'dateCreation' | 'dateModification'>>(() => {
+    if (projet) {
+      const { id, dateCreation, dateModification, ...rest } = projet;
+      return {
+        ...rest,
+        statut: rest.statut || 'planifie',
+        travaux: {
+          ...rest.travaux,
+          arretsReprises: Array.isArray(rest.travaux?.arretsReprises) ? rest.travaux.arretsReprises : [],
+        },
+      };
+    }
     return {
       ...emptyProjet,
       travaux: {
@@ -97,6 +108,8 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
       const arretsReprises = Array.isArray(rest.travaux.arretsReprises) ? rest.travaux.arretsReprises : [];
       const formDataWithDefaults = {
         ...rest,
+        // Ensure statut has a valid value (default to 'planifie' if missing or invalid)
+        statut: rest.statut || 'planifie',
         travaux: {
           ...rest.travaux,
           arretsReprises,
@@ -239,6 +252,19 @@ export function ProjectForm({ projet, onSave, onCancel }: ProjectFormProps) {
   }, [formData.travaux.arretsReprises, formData.travaux]);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation: prevent saving with empty status
+    if (!formData.statut || formData.statut.trim() === '') {
+      alert('Le statut du projet est obligatoire. Veuillez en sélectionner un.');
+      return;
+    }
+    
+    // Validation: require programme field
+    if (!formData.programme || formData.programme.trim() === '') {
+      alert('Le programme est un champ obligatoire.');
+      return;
+    }
+    
     onSave(projet ? { ...formData, id: projet.id, dateCreation: projet.dateCreation, dateModification: new Date().toISOString() } : formData);
   };
 

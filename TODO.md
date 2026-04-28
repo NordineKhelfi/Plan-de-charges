@@ -47,5 +47,5 @@
 - [x] Taux de restitution des avances : (Restitution avance forfaitaire (DA/TTC) + Restitution avance approvisionnement (DA/TTC)) / (Avance forfaitaire + Avance approvisionement)
 
 # Bugs
-- [ ] Status dropdown not set when modifyig a project.
+- [x] Status dropdown not set when modifyig a project.
 
